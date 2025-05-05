@@ -27,23 +27,20 @@ public class CoffeeController {
         return ResponseEntity.ok(coffeeService.getCoffeeById(id));
     }
 
-    @PostMapping
+    @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/admin/coffees")
     public ResponseEntity<Coffee> addCoffee(@RequestBody CoffeeDto coffeeDto) {
         return ResponseEntity.ok(coffeeService.addCoffee(coffeeDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/admin/coffees/{id}")
     public ResponseEntity<Coffee> updateCoffee(@PathVariable Long id, @RequestBody CoffeeDto coffeeDto) {
         return ResponseEntity.ok(coffeeService.updateCoffee(id, coffeeDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/admin/coffees/{id}")
     public ResponseEntity<Void> deleteCoffee(@PathVariable Long id) {
         coffeeService.deleteCoffee(id);
         return ResponseEntity.noContent().build();

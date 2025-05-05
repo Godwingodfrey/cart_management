@@ -2,6 +2,8 @@ package com.example.coffeeAPI.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -10,7 +12,8 @@ import java.util.Set;
 
 @Entity
 @Table(name = "orders")
-@Data
+@Setter
+@Getter
 public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

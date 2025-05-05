@@ -8,6 +8,10 @@ import com.example.coffeeAPI.repository.CoffeeRepository;
 import com.example.coffeeAPI.repository.OrderRepository;
 import com.example.coffeeAPI.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -52,8 +56,22 @@ public class OrderService {
         return convertToDto(order);
     }
 
-    public List<OrderDto> getAllOrders() {
-        return orderRepository.findAll().stream()
+    public List<OrderDto> getAllOrders(int page, int size, String statusFilter) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderDate").descending());
+        Page<Order> orderPage;
+
+        if (statusFilter != null && !statusFilter.isBlank()){
+            try {
+                Order.OrderStatus status = Order.OrderStatus.valueOf(statusFilter.toUpperCase());
+                orderPage = orderRepository.findByStatus(status, pageable);
+            } catch (IllegalArgumentException e){
+                throw new IllegalArgumentException("Ivalid order status: " + statusFilter);
+            }
+        } else {
+            orderPage = orderRepository.findAll(pageable);
+        }
+
+        return orderPage.stream()
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }

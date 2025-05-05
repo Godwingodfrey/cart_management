@@ -1,32 +1,32 @@
 package com.example.coffeeAPI.model;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "order_items")
-@Setter
 @Getter
-public class OrderItem {
+@Setter
+public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @Column(unique = true, nullable = false)
+    private String paymentId;
+
+    @OneToOne
     @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
-    @ManyToOne
-    @JoinColumn(name = "coffee_id", nullable = false)
-    private Coffee coffee;
+    @Column(nullable = false)
+    private BigDecimal amount;
 
     @Column(nullable = false)
-    private Integer quantity;
+    private String status;
 
-    @Column(nullable = false)
-    private BigDecimal price;
+    private LocalDateTime createdAt;
 }

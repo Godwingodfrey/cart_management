@@ -28,16 +28,18 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderById(id));
     }
 
-    @GetMapping("/admin")
+    @GetMapping("/admin/orders")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/admin/orders")
-    public ResponseEntity<List<OrderDto>> getAllOrders() {
-        return ResponseEntity.ok(orderService.getAllOrders());
+    public ResponseEntity<List<OrderDto>> getAllOrders(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String status
+    ) {
+        return ResponseEntity.ok(orderService.getAllOrders(page, size, status));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/orders/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    @RequestMapping("/admin/orders/{id}")
     public ResponseEntity<OrderDto> updateOrderStatus(@PathVariable Long id, @RequestParam String status) {
         return ResponseEntity.ok(orderService.updateOrderStatus(id, status));
     }

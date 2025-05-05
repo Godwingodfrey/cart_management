@@ -17,11 +17,13 @@ public class PaymentController {
 
     @PostMapping("/initiate")
     public ResponseEntity<PaymentResponse> initiatePayment(@RequestBody PaymentRequest paymentRequest) {
-        return ResponseEntity.ok(paymentService.initiatePayment(paymentRequest));
+        PaymentResponse response = paymentService.initiatePayment(paymentRequest);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/verify")
     public ResponseEntity<String> verifyPayment(@RequestParam String paymentId) {
-        return ResponseEntity.ok(paymentService.verifyPayment(paymentId));
+        String result = paymentService.verifyPayment(paymentId);
+        return ResponseEntity.ok(result);
     }
 }

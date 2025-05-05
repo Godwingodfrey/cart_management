@@ -11,6 +11,7 @@ import com.example.coffeeAPI.repository.CartRepository;
 import com.example.coffeeAPI.repository.CoffeeRepository;
 import com.example.coffeeAPI.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,7 @@ import java.util.Optional;
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class CartService {
 
     @Autowired
@@ -48,7 +50,20 @@ public class CartService {
     }
 
     public CartDto addToCart(CartItemDto cartItemDto) {
+        log.info("Adding to cart: {}", cartItemDto);
+
+        if (cartItemDto.getCoffeeId() == null) {
+            log.error("Coffee ID is null");
+            throw new IllegalArgumentException("Coffee ID must not be null");
+        }
+        if (cartItemDto.getQuantity() == null || cartItemDto.getQuantity() < 1) {
+            log.error("Invalid quantity: {}", cartItemDto.getQuantity());
+            throw new IllegalArgumentException("Quantity must be at least 1");
+        }
+
         Cart cart = getCurrentUserCart();
+        log.debug("Fetched cart for user: {}", cart.getUser().getUsername());
+
         Coffee coffee = coffeeRepository.findById(cartItemDto.getCoffeeId())
                 .orElseThrow(() -> new ResourceNotFoundException("Coffee not found with id: " + cartItemDto.getCoffeeId()));
 
@@ -59,14 +74,17 @@ public class CartService {
         if (existingItem.isPresent()) {
             CartItem item = existingItem.get();
             item.setQuantity(item.getQuantity() + cartItemDto.getQuantity());
+            log.debug("Updated quantity for coffee {}: {}", coffee.getId(), item.getQuantity());
         } else {
             CartItem newItem = new CartItem();
             newItem.setCoffee(coffee);
             newItem.setQuantity(cartItemDto.getQuantity());
             cart.addItem(newItem);
+            log.debug("Added new item to cart: coffeeId={}, quantity={}", coffee.getId(), cartItemDto.getQuantity());
         }
 
         cartRepository.save(cart);
+        log.info("Cart saved successfully for user: {}", cart.getUser().getUsername());
         return convertToDto(cart);
     }
 
